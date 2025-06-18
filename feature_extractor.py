@@ -50,7 +50,6 @@ def extract_features(pdf_path):
         img_count = 0
         for k in range(len(doc)):
             try:
-                print(doc.get_page_images(k))
                 img_count = len(doc.get_page_images(k)) + img_count
             except:
                 img_count = -1

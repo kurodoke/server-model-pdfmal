@@ -23,9 +23,9 @@ try:
     
     # Memuat scaler
     scaler = joblib.load("scaler.pkl")
-    print("Model dan scaler berhasil dimuat.")
+    app.logger.info("Model dan scaler berhasil dimuat.")
 except FileNotFoundError as e:
-    print(f"Error: {e}. Pastikan file 'model.json' dan 'scaler.pkl' ada.")
+    app.logger.info(f"Error: {e}. Pastikan file 'model.json' dan 'scaler.pkl' ada.")
     model = None
     scaler = None
 
@@ -56,14 +56,14 @@ def predict():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
         
-        print(f"File diterima: {file.filename}")
+        app.logger.info(f"File diterima: {file.filename}")
 
         # 1. Ekstraksi Fitur
         try:
             df_features = extract_features(filepath)
             if df_features is None:
                 raise ValueError("Ekstraksi fitur gagal.")
-            print("Fitur berhasil diekstraksi.")
+            app.logger.info("Fitur berhasil diekstraksi.")
         except Exception as e:
             os.remove(filepath)
             return jsonify({"error": f"Gagal mengekstrak fitur: {e}"}), 500
@@ -80,11 +80,11 @@ def predict():
             if col in df_processed.columns:
                 df_processed.drop(columns=[col], inplace=True)
             else:
-                 print(f"Peringatan: Kolom '{col}' tidak ditemukan untuk dihapus.")
+                 app.logger.info(f"Peringatan: Kolom '{col}' tidak ditemukan untuk dihapus.")
 
         df_processed['Header'] = df_processed['Header'].apply(lambda col: header_obj(col))
 
-        print("Pra-pemrosesan selesai.")
+        app.logger.info("Pra-pemrosesan selesai.")
         
         # 3. Prediksi Model
         try:
@@ -105,7 +105,7 @@ def predict():
                 prediction_label = "Benign"
                 probability_for_display = 1.0 - float(prob_malicious) # Konversi ke float standar
             
-            print(f"Prediksi: {prediction_label}, Probabilitas: {probability_for_display:.2%}")
+            app.logger.info(f"Prediksi: {prediction_label}, Probabilitas: {probability_for_display:.2%}")
 
         except Exception as e:
             os.remove(filepath)
