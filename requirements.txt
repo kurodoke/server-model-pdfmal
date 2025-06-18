@@ -1,0 +1,5 @@
+flask
+pandas
+scikit-learn==1.6.1
+xgboost
+PyMuPDF
